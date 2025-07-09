@@ -55,7 +55,7 @@ services:
       APP_RANKING_MODELNAME: ${APP_RANKING_MODELNAME:-"nvidia/llama-3.2-nv-rerankqa-1b-v2"}
       ENABLE_RERANKER: ${ENABLE_RERANKER:-True}
 
-      NVIDIA_API_KEY: ${NGC_API_KEY:?"NGC_API_KEY is required"}
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:?"NVIDIA_API_KEY is required"}
 
       # Number of document chunks to insert in LLM prompt, used only when ENABLE_RERANKER is set to True
       APP_RETRIEVER_TOPK: ${APP_RETRIEVER_TOPK:-10}

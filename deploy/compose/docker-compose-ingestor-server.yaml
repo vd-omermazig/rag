@@ -99,7 +99,7 @@ services:
 
   nv-ingest-ms-runtime:
     image: nvcr.io/nvidia/nemo-microservices/nv-ingest:25.4.1
-    cpuset: "0-15"
+    cpuset: "0-11"
     volumes:
       - ${DATASET_ROOT:-./data}:/workspace/data
     ports:
@@ -134,7 +134,7 @@ services:
       - NEMORETRIEVER_PARSE_INFER_PROTOCOL=http
       - NVIDIA_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
       - NGC_API_KEY=${NGC_API_KEY:-nvidiaapikey}
-      - NVIDIA_BUILD_API_KEY=${NGC_API_KEY:-nvidiaapikey}
+      - NVIDIA_BUILD_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
       # Self-hosted paddle endpoints.
       - PADDLE_GRPC_ENDPOINT=${PADDLE_GRPC_ENDPOINT:-paddle:8001}

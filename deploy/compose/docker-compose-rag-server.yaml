@@ -8,6 +8,9 @@ services:
       # Set context to repo's root directory
       context: ../../
       dockerfile: src/Dockerfile
+    volumes:
+      - ../../src:/workspace/src
+      - ../../../langchain-vast-vectorestore:/workspace/langchain-vast-vectorestore
     # start the server on port 8081 with 8 workers for improved latency on concurrent requests.
     command: --port 8081 --host 0.0.0.0 --workers 8
 
@@ -17,7 +20,7 @@ services:
       EXAMPLE_PATH: 'src/'
 
       ##===MINIO specific configurations which is used to store the multimodal base64 content===
-      MINIO_ENDPOINT: "minio:9010"
+      MINIO_ENDPOINT: "minio:9000"
       MINIO_ACCESSKEY: "minioadmin"
       MINIO_SECRETKEY: "minioadmin"
 
@@ -25,7 +28,10 @@ services:
       # URL on which vectorstore is hosted
       APP_VECTORSTORE_URL: "http://milvus:19530"
       # Type of vectordb used to store embedding supported type milvus
-      APP_VECTORSTORE_NAME: "milvus"
+      APP_VECTORSTORE_NAME: ${APP_VECTORSTORE_NAME:-"milvus"}
+      # VastData VectorStore configuration
+      VAST_VECTORSTORE_BASE_URL: ${VAST_VECTORSTORE_BASE_URL:-""}
+      VAST_VECTORSTORE_AUTH_TOKEN: ${VAST_VECTORSTORE_AUTH_TOKEN:-""}
       # Type of vectordb search to be used
       APP_VECTORSTORE_SEARCHTYPE: ${APP_VECTORSTORE_SEARCHTYPE:-"dense"} # Can be dense or hybrid
       # vectorstore collection name to store embeddings
@@ -135,8 +141,8 @@ services:
         NEXT_PUBLIC_RERANKER_MODEL: ${APP_RANKING_MODELNAME:-nvidia/llama-3.2-nv-rerankqa-1b-v2}
         # URL for rag server container
         NEXT_PUBLIC_CHAT_BASE_URL: "http://rag-server:8081/v1"
-        # URL for ingestor container
-        NEXT_PUBLIC_VDB_BASE_URL: "http://ingestor-server:8082/v1"
+        # URL for nvidia-api container (for collections management)
+        NEXT_PUBLIC_VDB_BASE_URL: "http://host.docker.internal:8083"
     ports:
       - "8090:3000"
     expose:
@@ -146,4 +152,5 @@ services:
 
 networks:
   default:
-    name: nvidia-rag
+    external: true
+    name: insight-engine-net

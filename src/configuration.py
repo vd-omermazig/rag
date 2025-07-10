@@ -30,7 +30,7 @@ class VectorStoreConfig(ConfigWizard):
     name: str = configfield(
         "name",
         default="milvus",
-        help_txt="The name of vector store",  # supports milvus
+        help_txt="The name of vector store",  # supports milvus and vast
     )
     url: str = configfield(
         "url",
@@ -69,6 +69,12 @@ class VectorStoreConfig(ConfigWizard):
         "search_type",
         default="hybrid", # dense or hybrid
         help_txt="Flag to control search type - 'dense' retrieval or 'hybrid' retrieval",
+    )
+
+    auth_token: str = configfield(
+        "auth_token",
+        default="",
+        help_txt="Authentication token for vector store (used by VastDataVectorStore)",
     )
 
 

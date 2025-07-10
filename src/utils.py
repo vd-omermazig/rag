@@ -239,6 +239,27 @@ def create_vectorstore_langchain(document_embedder, collection_name: str = "", v
                 f"{config.vector_store.search_type} search type is not supported" + \
                 "Please select from ['hybrid', 'dense']"
             )
+    elif config.vector_store.name == "vast":
+        logger.debug("Creating VastData VectorStore for collection: %s", collection_name)
+        if not collection_name:
+            collection_name = os.getenv('COLLECTION_NAME', "vector_db")
+        
+        try:
+            from vastdata_vectorstore import VastDataVectorStore
+        except ImportError:
+            logger.error("VastDataVectorStore not available. Please install vastdata-vectorstore package.")
+            raise ImportError("VastDataVectorStore not available. Please install vastdata-vectorstore package.")
+        
+        # Extract auth token from environment or config
+        base_url = os.getenv('VAST_VECTORSTORE_BASE_URL', getattr(config.vector_store, 'base_url', None))
+        auth_token = os.getenv('VAST_VECTORSTORE_AUTH_TOKEN', getattr(config.vector_store, 'auth_token', None))
+
+        logger.info("Creating VastData VectorStore with endpoint: %s", vdb_endpoint)
+        vectorstore = VastDataVectorStore(
+            base_url=base_url,
+            collection_name=collection_name,
+            auth_token=auth_token,
+        )
     else:
         raise ValueError(f"{config.vector_store.name} vector database is not supported")
     logger.debug("Vector store created and saved.")
@@ -549,13 +570,16 @@ def _get_ranking_model(model="", url="", top_n=4) -> BaseDocumentCompressor:
         if settings.ranking.model_engine == "nvidia-ai-endpoints":
             if url:
                 logger.info("Using ranking model hosted at %s", url)
-                return NVIDIARerank(base_url=url,
+                ranker = NVIDIARerank(base_url=url,
                                     top_n=top_n,
                                     truncate="END")
-
-            if model:
+            elif model:
                 logger.info("Using ranking model %s hosted at api catalog", model)
-                return NVIDIARerank(model=model, top_n=top_n, truncate="END")
+                ranker = NVIDIARerank(model=model, top_n=top_n, truncate="END")
+            else:
+                return None
+
+            return ranker
         else:
             logger.warning("Unable to find any supported ranking model. Supported engine is nvidia-ai-endpoints.")
     except Exception as e:

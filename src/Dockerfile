@@ -49,6 +49,9 @@ WORKDIR /workspace
 
 COPY ./ /workspace
 
+# Install VastData VectorStore package
+RUN pip3 install -e /workspace/langchain-vast-vectorestore
+
 WORKDIR /workspace/
 
 ENTRYPOINT ["uvicorn", "src.server:app"]

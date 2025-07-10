@@ -34,10 +34,17 @@ RUN apt list --installed |  grep -i installed | sed 's|\(.*\)/.*|\1|' | xargs ap
 RUN rm xz-utils*
 COPY LICENSE-3rd-party.txt /legal/
 
-# Install common dependencies for all examples
+# Copy requirements and wheels first for installation
+COPY ./requirements.txt /opt/requirements.txt
+COPY ./wheels/ /opt/wheels/
+
+# Install common dependencies for all examples  
 RUN --mount=type=cache,id=pip_cache,target=/root/.cache/pip,sharing=locked \
-    --mount=type=bind,source=./requirements.txt,target=/opt/requirements.txt \
-    pip3 install --no-cache-dir -r /opt/requirements.txt
+    # Transform wheel paths: "./wheels/" -> "/opt/wheels/" for Docker context
+    # This converts local paths in requirements.txt to Docker container paths
+    # Example: "./wheels/vastdata_vectorstore-0.1.0-py3-none-any.whl" becomes "/opt/wheels/vastdata_vectorstore-0.1.0-py3-none-any.whl"
+    sed 's|./wheels/|/opt/wheels/|g' /opt/requirements.txt > /opt/requirements_docker.txt && \
+    pip3 install --no-cache-dir -r /opt/requirements_docker.txt
 
 # Set environment variables needed for Text splitter
 RUN mkdir /tmp-data/;
@@ -48,9 +55,6 @@ ENV HF_HOME=/tmp-data
 WORKDIR /workspace
 
 COPY ./ /workspace
-
-# Install VastData VectorStore package
-RUN pip3 install -e /workspace/langchain-vast-vectorestore
 
 WORKDIR /workspace/
 

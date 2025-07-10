@@ -33,7 +33,7 @@ class MinioOperator:
         endpoint: str,
         access_key: str,
         secret_key: str,
-        default_bucket_name: str = "default-bucket"
+        default_bucket_name: str = "landgchaindev"
     ):
         self.client = Minio(
             endpoint,

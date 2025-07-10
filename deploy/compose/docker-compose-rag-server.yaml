@@ -25,7 +25,7 @@ services:
 
       ##===Vector DB specific configurations===
       # URL on which vectorstore is hosted
-      APP_VECTORSTORE_URL: "http://milvus:19530"
+      APP_VECTORSTORE_URL: "http://milvus-standalone:19530"
       # Type of vectordb used to store embedding supported type milvus
       APP_VECTORSTORE_NAME: ${APP_VECTORSTORE_NAME:-"milvus"}
       # VastData VectorStore configuration

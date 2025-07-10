@@ -34,7 +34,7 @@ class VectorStoreConfig(ConfigWizard):
     )
     url: str = configfield(
         "url",
-        default="http://milvus:19530",
+        default="http://milvus-standalone:19530",
         help_txt="The host of the machine running Vector Store DB",
     )
     nlist: int = configfield(

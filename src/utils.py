@@ -254,7 +254,7 @@ def create_vectorstore_langchain(document_embedder, collection_name: str = "", v
         base_url = os.getenv('VAST_VECTORSTORE_BASE_URL', getattr(config.vector_store, 'base_url', None))
         auth_token = os.getenv('VAST_VECTORSTORE_AUTH_TOKEN', getattr(config.vector_store, 'auth_token', None))
 
-        logger.info("Creating VastData VectorStore with endpoint: %s", vdb_endpoint)
+        logger.info("Creating VastData VectorStore with endpoint: %s", base_url)
         vectorstore = VastDataVectorStore(
             base_url=base_url,
             collection_name=collection_name,

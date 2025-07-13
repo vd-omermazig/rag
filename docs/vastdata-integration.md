@@ -20,7 +20,7 @@ This guide explains how to deploy the NVIDIA RAG Blueprint with VastData's vecto
 
 1. **NVIDIA API Key**: Follow the [quickstart guide](quickstart.md#obtain-an-api-key) to obtain your NGC/NVIDIA API key for cloud-hosted NIMs.
 
-2. **VastData Vector Store Service**: You need a running VastData vector store HTTP service. This should be accessible from your Docker containers.
+2. **External Ingestion Pipeline**: You need the VastData ingestion pipeline running to process and store documents. This includes containers like `nvidia-api`, `langchain-ingest-docs`, and `milvus-standalnoe` for document processing and embedding storage.
 
 3. **Docker & Docker Compose**: Ensure you have Docker and Docker Compose installed. See [quickstart prerequisites](quickstart.md#prerequisites).
 
@@ -65,9 +65,7 @@ export APP_EMBEDDINGS_MODELNAME="nvidia/nv-embedqa-e5-v5"
 Set your NVIDIA API keys for cloud-hosted NIMs:
 
 ```bash
-export NGC_API_KEY=your_ngc_api_key_here
 export NVIDIA_API_KEY=your_nvidia_api_key_here
-export NVIDIA_BUILD_API_KEY=your_nvidia_api_key_here
 ```
 
 **Important**: VastData integration works best with cloud-hosted NVIDIA NIMs. Make sure you have a valid NVIDIA API key from [NGC](https://org.ngc.nvidia.com/setup/api-keys).
@@ -97,7 +95,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 You should see:
 - `rag-server` - Up and healthy
 - `rag-frontend` - Up and healthy
-- A lot of other vast containers for the separate deployment like `nvidia-api`, `langchain-ingest-docs` and such  
+- A lot of other vast containers from the ingestion deployment like `nvidia-api`, `langchain-ingest-docs` and such  
 
 ### 3. Test VastData Connection
 
@@ -126,10 +124,10 @@ Since VastData is an external vector store, you'll need to ingest documents usin
 
 **External Ingestion Required:**
 
-Since VastData integration is retrieval-only, you must ingest documents using your own VastData ingestion pipeline **before** using the RAG server. The RAG server only connects to VastData for retrieval operations.
+Since VastData integration is retrieval-only, you must ingest documents using your own VastData ingestion pipeline so they'll show on the RAG server. The RAG server only connects to VastData for retrieval operations.
 
 **Example external ingestion workflow (outside of the RAG system):**
-1. Use VastData's native ingestion tools or APIs
+1. Use VastData's ingestion tools or APIs
 2. Process documents and generate embeddings with `nvidia/nv-embedqa-e5-v5` model
 3. Store embeddings in your VastData collection with proper metadata structure:
    ```json
